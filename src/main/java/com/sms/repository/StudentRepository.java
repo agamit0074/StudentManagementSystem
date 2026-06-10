@@ -62,6 +62,10 @@ public class StudentRepository {
 		return 1;
 	}
 	
+	
+	
+	
+	
 	public static void main(String[] args) {
 		StudentEntity stu = new StudentEntity("Rahul",7894561230l
 				,Date.valueOf(LocalDate.of(2001,5,12)),78.5);

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -62,7 +63,23 @@ public class StudentRepository {
 		return 1;
 	}
 	
-	
+	public StudentEntity readById(int id) throws SQLException {
+		String sql = "select * from student where id=?";
+		PreparedStatement ps = connection.prepareStatement(sql);
+		ps.setInt(1, id);
+		ResultSet rs =  ps.getResultSet();
+		if(rs.next()) {
+			StudentEntity s = new StudentEntity(rs.getInt(1),
+					rs.getString(2),
+					rs.getLong(3),
+					rs.getDate(4),
+					rs.getDouble(5),
+					rs.getTimestamp(6),
+					rs.getTimestamp(7));
+			return s;
+		}
+		return null;
+	}
 	
 	
 	

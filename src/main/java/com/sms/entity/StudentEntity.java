@@ -13,6 +13,18 @@ public class StudentEntity {
 	
 	
 	
+	
+	public StudentEntity(int id, String name, long mobile, Date dob, double per10, java.util.Date created_at,
+			java.util.Date updated_at) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.mobile = mobile;
+		this.dob = dob;
+		this.per10 = per10;
+		this.created_at = created_at;
+		this.updated_at = updated_at;
+	}
 	public StudentEntity(String name, long mobile, Date dob, double per10) {
 		super();
 		this.name = name;

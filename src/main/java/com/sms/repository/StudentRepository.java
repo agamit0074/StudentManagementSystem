@@ -69,8 +69,9 @@ public class StudentRepository {
 		String sql = "select * from student where id=?";
 		PreparedStatement ps = connection.prepareStatement(sql);
 		ps.setInt(1, id);
-		ResultSet rs =  ps.getResultSet();
-		if(rs.next()) {
+		ResultSet rs =  ps.executeQuery();
+		System.out.println(rs);
+		if(rs!=null && rs.next()) {
 			StudentEntity s = new StudentEntity(rs.getInt(1),
 					rs.getString(2),
 					rs.getLong(3),
@@ -118,12 +119,30 @@ public class StudentRepository {
 		
 	}
 	
+	//update by ID
+	public boolean updateByID(StudentEntity s) throws SQLException {
+		String sql = "update student set name=?,mobile =?,dob=?,per10=?,updated_at=? where id=?";
+		PreparedStatement ps = connection.prepareStatement(sql);
+		ps.setString(1,s.getName());
+		ps.setLong(2,s.getMobile());
+		ps.setDate(3,s.getDob());
+		ps.setDouble(4,s.getPer10());
+		ps.setTimestamp(5,Timestamp.valueOf(LocalDateTime.now()));
+		ps.setInt(6,s.getId());
+		int i =  ps.executeUpdate();
+		if(i==1) {
+			return true;
+		}
+		return false;
+	}
+	
 	
 	
 	public static void main(String[] args) throws SQLException {
 		StudentRepository repository = new StudentRepository();
 		Scanner sc  = new Scanner(System.in);
-		while(true) {
+		boolean flag = true;
+		while(flag) {
 			System.out.println("Press 1 : For Insert Data");
 			System.out.println("Press 2 : For Delete Student By ID");
 			System.out.println("Press 3 : For Update Student By ID");
@@ -158,12 +177,69 @@ public class StudentRepository {
 					System.out.println("Failed to Delete Student Data");
 				}
 			}
+			break;
+			case 3 :{
+				System.out.println("Enter ID :");
+				int id = sc.nextInt();
+				StudentEntity s  = repository.readById(id);
+				if(s!=null) {
+					System.out.println("Do you Want To Update Name");
+					char ch = sc.next().charAt(0);
+					if(ch=='y'||ch=='Y') {
+						System.out.println("Enter Updated Name");
+						String name = sc.next();
+						s.setName(name);
+					}
+					System.out.println("Do You Want to Update Mobile No");
+					ch = sc.next().charAt(0);
+					if(ch=='y'||ch=='Y') {
+						System.out.println("Enter Updated Mobile");
+						long mobile = sc.nextLong();
+						s.setMobile(mobile);
+					}
+					System.out.println("Do You Want to Update DOB");
+					ch = sc.next().charAt(0);
+					if(ch=='y'||ch=='Y') {
+						System.out.println("Enter Updated DOB");
+						String dob = sc.next();
+						s.setDob(Date.valueOf(dob));
+					}
+					System.out.println("Do You Want to Update 10th per");
+					ch = sc.next().charAt(0);
+					if(ch=='y'||ch=='Y') {
+						System.out.println("Enter Updated 10th Pre");
+						double per = sc.nextDouble();
+						s.setPer10(per);
+					}
+					repository.updateByID(s);
+					System.out.println("Student Data Updated Sucessfully");
+				}else {
+					System.out.println("Entered Id is Not Avlb");
+				}
+			}
+			break;
+			case 4 :{
+				System.out.println("Input ID");
+				int id = sc.nextInt();
+				StudentEntity s =  repository.readById(id);
+				if(s!=null) {
+					System.out.println(s);
+				}else {
+				System.out.println("Student Not Found By Given ID");
+				}
+			}
+			break;
 			case 5 : {
 				repository.readAll();
 			}
 			break;
+			case 7 : {
+				System.out.println("Have a Good Day Bye");
+				flag = false;
+			}
+			break;
 			default:
-				break;
+				System.out.println("Wrong Input!");
 			}
 		}
 	}

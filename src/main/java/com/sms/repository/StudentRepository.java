@@ -6,9 +6,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Scanner;
 
 import com.sms.entity.StudentEntity;
 
@@ -81,17 +83,88 @@ public class StudentRepository {
 		return null;
 	}
 	
+	//delete by Id
+	public boolean deleteById(int id) throws SQLException {
+		String sql = "delete from student where id=?";
+		PreparedStatement ps = connection.prepareStatement(sql);
+		ps.setInt(1, id);
+		int i = ps.executeUpdate(); //int -> no of rows affected
+		if(i==1) {
+			return true;
+		}
+		return false;
+	}
 	
-	
-	public static void main(String[] args) {
-		StudentEntity stu = new StudentEntity("Rahul",7894561230l
-				,Date.valueOf(LocalDate.of(2001,5,12)),78.5);
-		StudentRepository repository = new StudentRepository();
+	//read All Data
+	public void readAll() {
+		String sql = "select * from student";
 		try {
-			repository.saveStudent(stu);
+			Statement statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			System.out.println("ID\tNAME\tMOBILE\tDOB\tPER10\tCREATED_AT\tUPDATED_AT");
+			while(rs.next()) {
+				System.out.println(rs.getInt(1)+"\t"
+						+rs.getString(2)+"\t"
+						+rs.getLong(3)+"\t"
+						+rs.getDate(4)+"\t"
+						+rs.getDouble(5)+"\t"
+						+rs.getTimestamp(6)+"\t"
+						+rs.getTimestamp(7));
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	
+	public static void main(String[] args) throws SQLException {
+		StudentRepository repository = new StudentRepository();
+		Scanner sc  = new Scanner(System.in);
+		while(true) {
+			System.out.println("Press 1 : For Insert Data");
+			System.out.println("Press 2 : For Delete Student By ID");
+			System.out.println("Press 3 : For Update Student By ID");
+			System.out.println("Press 4 : For Read Student By ID");
+			System.out.println("Press 5 : For Read All Student Data");
+			System.out.println("Press 7 : For Exit");
+			int choice = sc.nextInt();
+			switch (choice) {
+			case 1:{
+				System.out.println("Enter Your Name :");
+				String name = sc.next();
+				System.out.println("Enter Your Mobile No:");
+				long mobile = sc.nextLong();
+				System.out.println("Enter Your DOB");
+				String dob = sc.next();
+				System.out.println("Enter Your 10th Precentage");
+				double per =  sc.nextDouble();
+				StudentEntity s = new StudentEntity(name, mobile,Date.valueOf(dob), per);
+				int i = repository.saveStudent(s);
+				if(i==1) {
+					System.out.println("SDtudent Data Sucess Fully Stored");
+				}
+			    }
+				break;
+			case 2 : {
+				System.out.println("Input Id");
+				int id = sc.nextInt();
+				Boolean res = repository.deleteById(id);
+				if(res==true) {
+					System.out.println("Student data Sucessfully Deleted");
+				}else {
+					System.out.println("Failed to Delete Student Data");
+				}
+			}
+			case 5 : {
+				repository.readAll();
+			}
+			break;
+			default:
+				break;
+			}
 		}
 	}
 	
